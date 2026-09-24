@@ -25,3 +25,6 @@
 
 ## 自检
 运行 `node scripts/check-orientation.mjs`：扫描 `images/` 下 bg_* / cg_*（不含 portraits、avatars、立绘 gu_/xie_），若有 height>width 则非零退出。
+
+## 导入记录
+- 2026-09-24：用户横版 batch1（`review/user_landscape_batch1/`）已对位写入 Ch1 空景/CG/卡面；`cg_night_guard` 用于 n29–n30；`IMG.gu_r` 暂指向 `card_r_longshangyan.png`（portraits 立绘未删）。尚缺 6 张 AI 高缺补图（见 ASSIGNMENT）。
