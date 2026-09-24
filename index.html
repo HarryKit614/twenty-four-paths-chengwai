@@ -773,6 +773,20 @@ html, body {
   opacity: 0; transition: opacity 1.5s ease-in-out;
 }
 .cinema-vignette.on { opacity: 1; }
+.cinema-hint {
+  position: absolute; left: 50%; bottom: calc(28px + var(--safe-b, 0px));
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(12,10,8,.55);
+  border: 1px solid rgba(196,165,116,.35);
+  color: rgba(232,214,176,.92);
+  font-size: 12px; letter-spacing: .28em;
+  pointer-events: none;
+  opacity: 0; transition: opacity .5s ease;
+}
+.cinema-hint.show { opacity: 1; }
 body.cinema-lock .dialogue-layer,
 body.cinema-lock .status-bar,
 body.cinema-lock .day-tag,
@@ -923,6 +937,7 @@ body.cinema-lock .theater-back { opacity: .25; }
           <img id="cinema-img" alt="" draggable="false">
           <video id="cinema-video" muted playsinline preload="auto"></video>
           <div class="cinema-vignette"></div>
+          <div class="cinema-hint" id="cinemaHint" aria-hidden="true">点击推进</div>
         </div>
       </div>
     </div>
@@ -1397,22 +1412,58 @@ function cinemaLater(fn, ms){
   cinemaTimers.push(id);
   return id;
 }
+let ferryVideoPreloadEl = null;
+function ferryVideoPreferredSrc(){
+  for(const fn of FERRY_VIDEO_CANDIDATES){
+    try{
+      const s = fn();
+      if(s) return s;
+    }catch(e){}
+  }
+  return "images/cg/cg_ferry.mp4";
+}
 function preloadFerryStills(){
   ["cg_ferry_wide","cg_ferry_mid","cg_ferry_close"].forEach(k=>{
     const u = imgUrl(k); if(!u) return;
     const im = new Image(); im.src = u;
   });
+  // Warm the ferry mp4 early (n12/n13 + cinema start) so probe/play rarely race the network.
+  const vsrc = ferryVideoPreferredSrc();
+  if(vsrc){
+    if(!ferryVideoPreloadEl){
+      ferryVideoPreloadEl = document.createElement("video");
+      ferryVideoPreloadEl.muted = true;
+      ferryVideoPreloadEl.playsInline = true;
+      ferryVideoPreloadEl.preload = "auto";
+      ferryVideoPreloadEl.setAttribute("aria-hidden","true");
+      ferryVideoPreloadEl.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px";
+      document.body.appendChild(ferryVideoPreloadEl);
+    }
+    if(ferryVideoPreloadEl.getAttribute("data-src") !== vsrc){
+      ferryVideoPreloadEl.setAttribute("data-src", vsrc);
+      ferryVideoPreloadEl.src = vsrc;
+      try{ ferryVideoPreloadEl.load(); }catch(e){}
+    }
+  }
 }
 function probeVideoSrc(){
   return new Promise(resolve=>{
     const candidates = FERRY_VIDEO_CANDIDATES.map(fn=>{ try{return fn();}catch(e){return null;} }).filter(Boolean);
+    // Prefer known primary path immediately; still probe so a dead path can fall through.
+    const preferred = ferryVideoPreferredSrc();
+    if(preferred && !candidates.includes(preferred)) candidates.unshift(preferred);
     let i = 0;
     function tryNext(){
-      if(i >= candidates.length){ resolve(null); return; }
+      if(i >= candidates.length){
+        // Last resort: still return preferred so play() can attempt direct load.
+        resolve(preferred || null);
+        return;
+      }
       const src = candidates[i++];
       const v = document.createElement("video");
-      v.preload = "metadata";
+      v.preload = "auto";
       v.muted = true;
+      v.playsInline = true;
       let done = false;
       const cleanup = ()=>{ v.removeAttribute("src"); try{v.load();}catch(e){} };
       const fail = ()=>{
@@ -1429,7 +1480,15 @@ function probeVideoSrc(){
         cleanup();
         resolve(src);
       };
-      const to = setTimeout(fail, 1600);
+      const to = setTimeout(()=>{
+        // Slow net: accept this candidate anyway rather than skipping video.
+        if(done) return;
+        done = true;
+        cleanup();
+        resolve(src);
+      }, 10000);
+      v.addEventListener("loadedmetadata", ok, {once:true});
+      v.addEventListener("canplay", ok, {once:true});
       v.addEventListener("loadeddata", ok, {once:true});
       v.addEventListener("error", fail, {once:true});
       v.src = src;
@@ -1473,6 +1532,18 @@ function onCinemaClick(e){
   else if(cinemaPhase === 2) cinemaGoClose();
   // phase 3 waits for video timer; phase 4 locked
 }
+function setCinemaHint(on){
+  const h = $("cinemaHint");
+  if(!h) return;
+  if(on){
+    h.textContent = "点击推进";
+    h.classList.add("show");
+    h.setAttribute("aria-hidden","false");
+  } else {
+    h.classList.remove("show");
+    h.setAttribute("aria-hidden","true");
+  }
+}
 function bindCinemaClick(on){
   const layer = $("cinema-layer");
   if(!layer) return;
@@ -1501,6 +1572,7 @@ function cinemaGoWide(){
   layer.setAttribute("aria-hidden","false");
   layer.classList.remove("video-lock");
   setCinemaImg("cg_ferry_wide", "zoom05");
+  setCinemaHint(true);
   // fade in
   requestAnimationFrame(()=> layer.classList.add("show"));
   bindCinemaClick(true);
@@ -1521,6 +1593,7 @@ function cinemaGoClose(){
   img.classList.remove("breath");
   setCinemaImg("cg_ferry_close", "zoom11");
   if(vig) vig.classList.add("on");
+  setCinemaHint(false);
   // ~2s after close → try video
   cinemaLater(()=> cinemaGoVideo(), 2000);
 }
@@ -1530,6 +1603,7 @@ async function cinemaGoVideo(){
   const layer = $("cinema-layer");
   const img = $("cinema-img");
   const vid = $("cinema-video");
+  setCinemaHint(false);
   layer.classList.add("video-lock");
   bindCinemaClick(false);
 
@@ -1570,6 +1644,7 @@ function cinemaAftermath(){
   if(cinemaPhase === 5) return;
   cinemaPhase = 5;
   cinemaClearTimers();
+  setCinemaHint(false);
   bindCinemaClick(false);
   const layer = $("cinema-layer");
   const img = $("cinema-img");
@@ -2093,6 +2168,7 @@ $("btnTheaterBack").addEventListener("click", ()=>{
     if(vid){ try{vid.pause();}catch(e){} vid.onended=null; vid.onerror=null; vid.removeAttribute("src"); try{vid.load();}catch(e){} vid.classList.remove("visible"); }
     if(img) img.classList.remove("visible","zoom05","zoom11","breath");
     if(layer){ layer.classList.remove("show","video-lock"); layer.hidden=true; layer.setAttribute("aria-hidden","true"); }
+    setCinemaHint(false);
     document.body.classList.remove("cinema-lock");
     cinemaActive=false; cinemaPhase=0;
   }
