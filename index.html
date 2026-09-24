@@ -358,7 +358,7 @@ html, body {
 }
 
 /* ===== POSTCARD / AWAY ===== */
-#postcard, #away { background: #12100c; }
+#postcard, #away, #gallery { background: #12100c; }
 .panel-header {
   padding: calc(28px + var(--safe-t)) 22px 12px; text-align: center; position: relative; z-index: 2;
 }
@@ -413,6 +413,272 @@ html, body {
   text-align: center; padding: 60px 24px; color: var(--text-dim);
   font-size: 13px; letter-spacing: 0.1em; line-height: 1.9;
 }
+
+/* ===== GALLERY ===== */
+#gallery { background: #0e0c09; }
+#gallery::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201,165,106,0.07), transparent 55%),
+    linear-gradient(180deg, #12100c 0%, #0a0907 100%);
+  opacity: 1;
+}
+.gal-header {
+  padding: calc(28px + var(--safe-t)) 22px 8px; text-align: center; position: relative; z-index: 2;
+}
+.gal-header h1 { font-size: 18px; letter-spacing: 0.32em; color: var(--gold-bright); font-weight: 500; }
+.gal-header .sub { margin-top: 6px; font-size: 11px; color: var(--text-dim); letter-spacing: 0.22em; }
+.gal-filters {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+  padding: 10px 16px 6px; position: relative; z-index: 2;
+}
+.gal-chip {
+  appearance: none; border: 1px solid var(--gold-dim);
+  background: rgba(26,22,18,0.5); color: var(--text-dim);
+  padding: 6px 14px; border-radius: 999px;
+  font-family: inherit; font-size: 11px; letter-spacing: 0.16em; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.gal-chip.on {
+  background: rgba(201,165,106,0.18); border-color: var(--gold);
+  color: var(--gold-bright);
+}
+.gal-grid {
+  flex: 1; overflow-y: auto; padding: 12px 16px calc(28px + var(--safe-b));
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start;
+  position: relative; z-index: 2;
+}
+.gal-card {
+  position: relative; aspect-ratio: 9/16; border-radius: 12px;
+  overflow: hidden; cursor: pointer;
+  background: rgba(30,26,20,0.7);
+  border: 1px solid var(--gold-dim);
+  transition: transform 0.2s, box-shadow 0.25s;
+}
+.gal-card:active { transform: scale(0.97); }
+.gal-card .thumb {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center top;
+  background-repeat: no-repeat;
+}
+.gal-card .thumb.locked {
+  filter: brightness(0.12) contrast(1.1);
+}
+.gal-card .shade {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 42%;
+  background: linear-gradient(transparent, rgba(10,8,6,0.92));
+  pointer-events: none;
+}
+.gal-card .meta {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 10px 10px 12px; z-index: 2;
+}
+.gal-card .meta .cname {
+  font-size: 14px; letter-spacing: 0.18em; color: var(--gold-bright);
+}
+.gal-card .meta .cname-char {
+  margin-top: 3px; font-size: 10px; letter-spacing: 0.14em; color: var(--text-dim);
+}
+.gal-badge {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  min-width: 28px; padding: 3px 7px; border-radius: 6px;
+  font-size: 10px; letter-spacing: 0.08em; text-align: center;
+  font-weight: 600; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.gal-badge.R {
+  color: #d4b896; border: 1px solid #a67c5233;
+  background: rgba(90,60,35,0.55);
+  box-shadow: 0 0 0 1px rgba(166,124,82,0.25);
+}
+.gal-badge.SR {
+  color: #c8dce8; border: 1px solid #8aadc633;
+  background: rgba(40,60,75,0.6);
+  box-shadow: 0 0 10px rgba(140,180,210,0.25);
+}
+.gal-badge.SSR {
+  color: #f0e0b0; border: 1px solid #c9a56a88;
+  background: rgba(80,60,25,0.65);
+  box-shadow: 0 0 12px rgba(201,165,106,0.4);
+}
+.gal-card.rarity-R { border-color: #a67c5288; box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(166,124,82,0.35); }
+.gal-card.rarity-SR {
+  border-color: #9bb8cc99;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4), 0 0 16px rgba(140,180,210,0.12), inset 0 0 0 1px rgba(155,184,204,0.35);
+}
+.gal-card.rarity-SSR {
+  border-color: #c9a56acc;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 20px rgba(201,165,106,0.22), inset 0 0 0 1px rgba(232,213,168,0.35);
+}
+.gal-card.locked { cursor: default; border-style: dashed; border-color: var(--gold-dim); }
+.gal-card .lock-veil {
+  position: absolute; inset: 0; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; background: rgba(8,6,4,0.35);
+}
+.gal-card .lock-veil .lk { font-size: 22px; color: var(--gold); opacity: 0.55; }
+.gal-card .lock-veil .lt { font-size: 11px; letter-spacing: 0.2em; color: var(--text-dim); }
+.gal-card .fav-dot {
+  position: absolute; top: 10px; left: 10px; z-index: 3;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 8px var(--gold); display: none;
+}
+.gal-card.fav .fav-dot { display: block; }
+.gal-empty-hint {
+  grid-column: 1 / -1; text-align: center; padding: 28px 12px 8px;
+  font-size: 12px; color: var(--text-dim); letter-spacing: 0.12em; line-height: 1.9;
+}
+.gal-away-link {
+  display: inline-block; margin-top: 10px; padding: 6px 14px;
+  border: 1px solid var(--gold-dim); border-radius: 999px;
+  color: var(--gold); font-size: 11px; letter-spacing: 0.16em; cursor: pointer;
+  background: rgba(26,22,18,0.4); font-family: inherit;
+}
+
+/* detail overlay */
+#galDetail {
+  position: absolute; inset: 0; z-index: 40;
+  display: none; flex-direction: column;
+  background: #050403; opacity: 0; transition: opacity 0.35s ease;
+}
+#galDetail.show { display: flex; opacity: 1; }
+.gal-d-stage {
+  flex: 1; position: relative; overflow: hidden; background: #0a0806;
+  display: flex; align-items: center; justify-content: center;
+}
+.gal-d-img {
+  width: 100%; height: 100%;
+  background-size: contain; background-position: center center;
+  background-repeat: no-repeat;
+  transition: transform 0.35s ease;
+}
+.gal-d-img.zoom { transform: scale(1.12); }
+.gal-d-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.gal-d-fx.rain::before, .gal-d-fx.rain::after {
+  content: ""; position: absolute; inset: -20% 0;
+  background-image: repeating-linear-gradient(
+    105deg, transparent 0 8px, rgba(180,200,220,0.07) 8px 9px
+  );
+  animation: rainDrift 4.5s linear infinite; opacity: 0.55;
+}
+.gal-d-fx.rain::after { animation-duration: 6.2s; opacity: 0.3; transform: translateX(12px); }
+@keyframes rainDrift {
+  from { transform: translateY(-8%); }
+  to { transform: translateY(12%); }
+}
+.gal-d-fx.frost .spark {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: #f0e0b0; box-shadow: 0 0 6px #e8d5a8;
+  animation: frostFall 2.4s ease-out forwards; opacity: 0;
+}
+@keyframes frostFall {
+  0% { opacity: 0; transform: translateY(-8px) scale(0.6); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(70vh) scale(1.1); }
+}
+.gal-d-frame {
+  position: absolute; inset: 10px; pointer-events: none; border-radius: 4px; z-index: 2;
+}
+.gal-d-frame.R { border: 1px solid rgba(166,124,82,0.55); box-shadow: inset 0 0 0 1px rgba(166,124,82,0.2); }
+.gal-d-frame.SR {
+  border: 1px solid rgba(155,184,204,0.55);
+  box-shadow: inset 0 0 0 1px rgba(155,184,204,0.25), 0 0 24px rgba(140,180,210,0.12);
+}
+.gal-d-frame.SSR {
+  border: 1px solid rgba(201,165,106,0.75);
+  box-shadow: inset 0 0 0 2px rgba(232,213,168,0.25), 0 0 28px rgba(201,165,106,0.22);
+}
+.gal-d-frame.SSR::before, .gal-d-frame.SSR::after {
+  content: ""; position: absolute; width: 18px; height: 18px;
+  border-color: var(--gold-bright); border-style: solid; opacity: 0.7;
+}
+.gal-d-frame.SSR::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.gal-d-frame.SSR::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+.gal-d-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 5;
+  padding: calc(14px + var(--safe-t)) 14px 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.gal-d-top button {
+  appearance: none; border: 1px solid var(--gold-dim);
+  background: rgba(20,16,12,0.55); backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--gold-bright); font-family: inherit;
+  font-size: 13px; letter-spacing: 0.12em; padding: 8px 12px;
+  border-radius: 999px; cursor: pointer;
+}
+.gal-d-fav.on { color: #f0d090; border-color: var(--gold); background: rgba(201,165,106,0.2); }
+.gal-d-info {
+  position: relative; z-index: 5;
+  margin: 0 12px calc(14px + var(--safe-b));
+  padding: 16px 16px 14px;
+  background: rgba(22,18,14,0.88);
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  border: 1px solid var(--gold-edge); border-radius: 16px;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+}
+.gal-d-info.rarity-R { border-color: #a67c5288; }
+.gal-d-info.rarity-SR { border-color: #9bb8cc99; box-shadow: 0 -8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(140,180,210,0.08); }
+.gal-d-info.rarity-SSR { border-color: #c9a56acc; box-shadow: 0 -8px 32px rgba(0,0,0,0.45), 0 0 24px rgba(201,165,106,0.18); }
+.gal-d-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.gal-d-name { font-size: 20px; letter-spacing: 0.28em; color: var(--gold-bright); font-weight: 500; }
+.gal-d-theme { font-size: 12px; color: var(--text-dim); letter-spacing: 0.14em; margin-bottom: 4px; }
+.gal-d-obtain { font-size: 11px; color: var(--gold); letter-spacing: 0.12em; opacity: 0.75; margin-bottom: 14px; }
+.gal-d-actions { display: flex; gap: 8px; }
+.gal-d-actions button {
+  flex: 1; appearance: none; font-family: inherit; cursor: pointer;
+  padding: 11px 10px; border-radius: 12px; font-size: 13px; letter-spacing: 0.16em;
+  border: 1px solid var(--gold-edge); background: rgba(201,165,106,0.14); color: var(--gold-bright);
+}
+.gal-d-actions button.ghost {
+  background: transparent; color: var(--text-dim); border-color: var(--gold-dim);
+}
+
+/* story reader */
+#galStory {
+  position: absolute; inset: 0; z-index: 45;
+  display: none; flex-direction: column;
+  background: #1a1612; opacity: 0; transition: opacity 0.35s ease;
+}
+#galStory.show { display: flex; opacity: 1; }
+.gal-story-paper {
+  flex: 1; overflow-y: auto;
+  margin: calc(56px + var(--safe-t)) 18px calc(24px + var(--safe-b));
+  padding: 28px 22px 32px;
+  background:
+    linear-gradient(180deg, rgba(243,235,224,0.97), rgba(232,220,200,0.96));
+  border: 1px solid rgba(201,165,106,0.35);
+  border-radius: 4px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45), inset 0 0 40px rgba(180,150,100,0.08);
+  color: #2a241c;
+  position: relative;
+}
+.gal-story-paper::before {
+  content: ""; position: absolute; inset: 8px; pointer-events: none;
+  border: 1px solid rgba(166,124,82,0.25); border-radius: 2px;
+}
+.gal-story-kicker {
+  font-size: 11px; letter-spacing: 0.28em; color: #8a6a3e; margin-bottom: 10px;
+}
+.gal-story-title {
+  font-size: 22px; letter-spacing: 0.32em; color: #1a1612;
+  margin-bottom: 6px; font-weight: 500;
+}
+.gal-story-char {
+  font-size: 12px; letter-spacing: 0.2em; color: #6a5a45; margin-bottom: 22px;
+}
+.gal-story-body {
+  font-size: 15px; line-height: 2.05; letter-spacing: 0.08em;
+  color: #2c261f; text-align: justify;
+}
+.gal-story-close {
+  position: absolute; top: calc(14px + var(--safe-t)); left: 14px; z-index: 2;
+  appearance: none; border: 1px solid var(--gold-dim);
+  background: rgba(20,16,12,0.7); color: var(--gold-bright);
+  font-family: inherit; font-size: 13px; letter-spacing: 0.12em;
+  padding: 8px 12px; border-radius: 999px; cursor: pointer;
+}
+
 .tooltip-mask {
   position: absolute; inset: 0; z-index: 50;
   background: rgba(8,6,4,0.55); display: none; align-items: flex-end;
@@ -459,8 +725,8 @@ html, body {
     <div class="home-bubble" id="homeBubble"></div>
     <nav class="home-nav">
       <button class="nav-btn primary" id="btnMain" type="button"><span class="ico">卷</span>主线</button>
-      <button class="nav-btn" id="btnPostcard" type="button"><span class="ico">笺</span>今日明信片</button>
-      <button class="nav-btn" id="btnAway" type="button"><span class="ico">山</span>他这阵子</button>
+      <button class="nav-btn" id="btnGallery" type="button"><span class="ico">绘</span>图鉴</button>
+      <button class="nav-btn" id="btnPostcard" type="button"><span class="ico">笺</span>明信片</button>
     </nav>
   </section>
 
@@ -519,6 +785,56 @@ html, body {
     <div class="away-scroll" id="awayScroll"></div>
   </section>
 
+
+  <section id="gallery" class="screen">
+    <div class="gal-header">
+      <button class="panel-back" id="btnGalBack" type="button">‹ 返回</button>
+      <h1>立绘图鉴</h1>
+      <div class="sub">收藏与往事</div>
+    </div>
+    <div class="gal-filters" id="galFilters">
+      <button type="button" class="gal-chip on" data-rarity="ALL">全部</button>
+      <button type="button" class="gal-chip" data-rarity="R">R</button>
+      <button type="button" class="gal-chip" data-rarity="SR">SR</button>
+      <button type="button" class="gal-chip" data-rarity="SSR">SSR</button>
+    </div>
+    <div class="gal-grid" id="galGrid"></div>
+  </section>
+
+  <div id="galDetail">
+    <div class="gal-d-stage" id="galDStage">
+      <div class="gal-d-img" id="galDImg"></div>
+      <div class="gal-d-fx" id="galDFx"></div>
+      <div class="gal-d-frame" id="galDFrame"></div>
+      <div class="gal-d-top">
+        <button type="button" id="btnGalDClose">‹ 返回</button>
+        <button type="button" class="gal-d-fav" id="btnGalFav">☆ 收藏</button>
+      </div>
+    </div>
+    <div class="gal-d-info" id="galDInfo">
+      <div class="gal-d-row">
+        <span class="gal-badge" id="galDBadge">R</span>
+        <div class="gal-d-name" id="galDName">—</div>
+      </div>
+      <div class="gal-d-theme" id="galDTheme"></div>
+      <div class="gal-d-obtain" id="galDObtain"></div>
+      <div class="gal-d-actions">
+        <button type="button" id="btnGalStory">阅读往事</button>
+        <button type="button" class="ghost" id="btnGalZoom">沉浸欣赏</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="galStory">
+    <button type="button" class="gal-story-close" id="btnGalStoryClose">‹ 收起</button>
+    <div class="gal-story-paper">
+      <div class="gal-story-kicker" id="galSKicker">往事</div>
+      <div class="gal-story-title" id="galSTitle"></div>
+      <div class="gal-story-char" id="galSChar"></div>
+      <div class="gal-story-body" id="galSBody"></div>
+    </div>
+  </div>
+
   <div class="tooltip-mask" id="tooltipMask">
     <div class="tooltip-card">
       <h3 id="tipTitle">何谓此句</h3>
@@ -547,7 +863,10 @@ const IMG = {
   cg_water: "images/cg_water.png",
   cg_pass: "images/cg_pass.png",
   cg_dawn_talk: "images/cg_dawn_talk.png",
-  cg_window: "images/cg_window.png"
+  cg_window: "images/cg_window.png",
+  card_r_longshangyan: "images/card_r_longshangyan.png",
+  card_sr_yusuogui: "images/card_sr_yusuogui.png",
+  card_ssr_jiashangshuang: "images/card_ssr_jiashangshuang.png"
 };
 
 const LORE = {
@@ -556,6 +875,163 @@ const LORE = {
   "渡灵": "不是巫术里的夺舍。是把将散的气，慢慢渡回壳里。像焐手，像把水渡过干裂的唇。顾山说：这算不算医，他也不知道。",
   "廿四道": "城外廿四条旧路。有人说那是逃命的道，有人说是还愿的道。你醒来时，雨正落在其中一条上。"
 };
+
+
+const GALLERY = [
+  {
+    id: "gu_r_longshangyan",
+    char: "顾山",
+    name: "垄上烟",
+    rarity: "R",
+    theme: "农耕",
+    image: "card_r_longshangyan",
+    unlocked: true,
+    story: "那年猎获薄，村里粮也紧。顾山在破祠后空垄里下了荞麦种。有人笑猎户耕田，他只应一声，把锄柄握热。黄昏炊烟起来时，他站在垄上，看烟散进山影里——人要活，不只靠血气，也靠一寸能长苗的土。",
+    obtain: "第一章收集"
+  },
+  {
+    id: "gu_sr_yusuogui",
+    char: "顾山",
+    name: "雨蓑归",
+    rarity: "SR",
+    theme: "雨夜蓑衣",
+    image: "card_sr_yusuogui",
+    unlocked: true,
+    story: "山里夜雨，路只剩脚感。他披着旧蓑，斗笠压低，怀里是邻村托他带回的药包。雨打蓑衣的声音很密，像有人在身外说话。他没有加快，也没有停。到灯火处时，蓑上的水一串串落在门槛外，他才抬手摘笠——雨还在下，人已经回来了。",
+    obtain: "第一章 · 雨夜"
+  },
+  {
+    id: "gu_ssr_jiashangshuang",
+    char: "顾山",
+    name: "甲上霜",
+    rarity: "SSR",
+    theme: "军场旧影",
+    image: "card_ssr_jiashangshuang",
+    unlocked: true,
+    story: "更早些年，关城外有霜。铁衣一夜结白，像谁在甲上写了无声的字。那一仗没有写进谁的功册，他却记得天亮时枪尖的冷。后来他卸甲入山，甲留在箱底。偶有霜降，他仍会在门边站一站——不是想念战场，只是确认：自己还选得了「不走那条路」。",
+    obtain: "第一章 · 往事"
+  }
+];
+
+const GALLERY_FAV_KEY = "tfp_gallery_favs";
+function loadGalFavs() {
+  try { return JSON.parse(localStorage.getItem(GALLERY_FAV_KEY) || "[]"); }
+  catch (e) { return []; }
+}
+function saveGalFavs(arr) { localStorage.setItem(GALLERY_FAV_KEY, JSON.stringify(arr)); }
+function isGalFav(id) { return loadGalFavs().includes(id); }
+function toggleGalFav(id) {
+  const favs = loadGalFavs();
+  const i = favs.indexOf(id);
+  if (i >= 0) favs.splice(i, 1); else favs.push(id);
+  saveGalFavs(favs); return favs.includes(id);
+}
+
+let galFilter = "ALL";
+let galCurrent = null;
+let galZoomed = false;
+
+function renderGallery() {
+  const grid = $("galGrid");
+  grid.innerHTML = "";
+  const list = GALLERY.filter(c => galFilter === "ALL" || c.rarity === galFilter);
+  if (!list.length) {
+    grid.innerHTML = `<div class="gal-empty-hint">此稀有度暂无立绘。<br>日后剧情推进，会有新影落进这里。</div>`;
+  }
+  list.forEach(card => {
+    const el = document.createElement("div");
+    const locked = !card.unlocked;
+    el.className = `gal-card rarity-${card.rarity}` + (locked ? " locked" : "") + (isGalFav(card.id) ? " fav" : "");
+    el.dataset.id = card.id;
+    const thumbCls = locked ? "thumb locked" : "thumb";
+    const lockHtml = locked
+      ? `<div class="lock-veil"><div class="lk">锁</div><div class="lt">未解锁</div></div>`
+      : "";
+    el.innerHTML = `
+      <div class="${thumbCls}" style="background-image:url('${imgUrl(card.image)}')"></div>
+      <div class="shade"></div>
+      <span class="gal-badge ${card.rarity}">${card.rarity}</span>
+      <span class="fav-dot"></span>
+      <div class="meta">
+        <div class="cname">${locked ? "？？？" : card.name}</div>
+        <div class="cname-char">${locked ? "——" : card.char}</div>
+      </div>
+      ${lockHtml}`;
+    if (!locked) {
+      el.addEventListener("click", () => openGalDetail(card.id));
+    }
+    grid.appendChild(el);
+  });
+  // secondary: 他这阵子 entry
+  const hint = document.createElement("div");
+  hint.className = "gal-empty-hint";
+  hint.innerHTML = `山里的日子，也不止立绘一处。<br><button type="button" class="gal-away-link" id="btnGalToAway">他这阵子</button>`;
+  grid.appendChild(hint);
+  const awayBtn = hint.querySelector("#btnGalToAway");
+  if (awayBtn) awayBtn.addEventListener("click", () => { renderAway(); showScreen("away"); });
+}
+
+function spawnFrostParticles(fx) {
+  fx.innerHTML = "";
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement("span");
+    s.className = "spark";
+    s.style.left = (8 + Math.random() * 84) + "%";
+    s.style.top = (Math.random() * 30) + "%";
+    s.style.animationDelay = (Math.random() * 1.2) + "s";
+    s.style.animationDuration = (1.8 + Math.random() * 1.4) + "s";
+    fx.appendChild(s);
+  }
+  setTimeout(() => { if (fx.classList.contains("frost")) fx.innerHTML = ""; }, 3200);
+}
+
+function openGalDetail(id) {
+  const card = GALLERY.find(c => c.id === id);
+  if (!card || !card.unlocked) return;
+  galCurrent = card;
+  galZoomed = false;
+  $("galDImg").classList.remove("zoom");
+  $("galDImg").style.backgroundImage = `url("${imgUrl(card.image)}")`;
+  $("galDFrame").className = "gal-d-frame " + card.rarity;
+  $("galDBadge").className = "gal-badge " + card.rarity;
+  $("galDBadge").textContent = card.rarity;
+  $("galDName").textContent = card.name;
+  $("galDTheme").textContent = card.char + " · " + card.theme;
+  $("galDObtain").textContent = "获取 · " + (card.obtain || "—");
+  $("galDInfo").className = "gal-d-info rarity-" + card.rarity;
+  const favOn = isGalFav(card.id);
+  $("btnGalFav").classList.toggle("on", favOn);
+  $("btnGalFav").textContent = favOn ? "★ 已收藏" : "☆ 收藏";
+  const fx = $("galDFx");
+  fx.className = "gal-d-fx";
+  fx.innerHTML = "";
+  if (card.rarity === "SSR") {
+    fx.classList.add("frost");
+    spawnFrostParticles(fx);
+  } else if (card.rarity === "SR") {
+    fx.classList.add("rain");
+  }
+  $("galDetail").classList.add("show");
+}
+
+function closeGalDetail() {
+  $("galDetail").classList.remove("show");
+  $("galStory").classList.remove("show");
+  galCurrent = null;
+  $("galDFx").className = "gal-d-fx";
+  $("galDFx").innerHTML = "";
+  renderGallery();
+}
+
+function openGalStory() {
+  if (!galCurrent) return;
+  $("galSKicker").textContent = galCurrent.rarity + " · 往事";
+  $("galSTitle").textContent = galCurrent.name;
+  $("galSChar").textContent = galCurrent.char + " · " + galCurrent.theme;
+  $("galSBody").textContent = galCurrent.story;
+  $("galStory").classList.add("show");
+}
+
 
 const STORE_KEY = "ershidaolu_ch1_v2";
 const TZ = "Asia/Hong_Kong";
@@ -1987,10 +2463,38 @@ function initHome() {
 }
 
 $("btnMain").addEventListener("click", () => startChapter());
+$("btnGallery").addEventListener("click", () => { galFilter = "ALL"; document.querySelectorAll(".gal-chip").forEach(c => c.classList.toggle("on", c.dataset.rarity === "ALL")); renderGallery(); showScreen("gallery"); });
 $("btnPostcard").addEventListener("click", () => { renderPostcards(); showScreen("postcard"); });
-$("btnAway").addEventListener("click", () => { renderAway(); showScreen("away"); });
 $("btnPcBack").addEventListener("click", () => showScreen("home"));
-$("btnAwayBack").addEventListener("click", () => showScreen("home"));
+$("btnAwayBack").addEventListener("click", () => showScreen("gallery"));
+$("btnGalBack").addEventListener("click", () => showScreen("home"));
+$("btnGalDClose").addEventListener("click", () => closeGalDetail());
+$("btnGalFav").addEventListener("click", () => {
+  if (!galCurrent) return;
+  const on = toggleGalFav(galCurrent.id);
+  $("btnGalFav").classList.toggle("on", on);
+  $("btnGalFav").textContent = on ? "★ 已收藏" : "☆ 收藏";
+});
+$("btnGalStory").addEventListener("click", () => openGalStory());
+$("btnGalStoryClose").addEventListener("click", () => $("galStory").classList.remove("show"));
+$("btnGalZoom").addEventListener("click", () => {
+  galZoomed = !galZoomed;
+  $("galDImg").classList.toggle("zoom", galZoomed);
+  $("btnGalZoom").textContent = galZoomed ? "还原" : "沉浸欣赏";
+});
+$("galDStage").addEventListener("click", (e) => {
+  if (e.target.closest(".gal-d-top") || e.target.closest("button")) return;
+  galZoomed = !galZoomed;
+  $("galDImg").classList.toggle("zoom", galZoomed);
+  $("btnGalZoom").textContent = galZoomed ? "还原" : "沉浸欣赏";
+});
+document.querySelectorAll(".gal-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    galFilter = chip.dataset.rarity;
+    document.querySelectorAll(".gal-chip").forEach(c => c.classList.toggle("on", c === chip));
+    renderGallery();
+  });
+});
 $("btnTheaterBack").addEventListener("click", () => {
   clearType(); hideChoices(); state.ended = false; showScreen("home");
 });
