@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>廿四道·城外 — 雨夜破祠</title>
 <style>
-/* Landscape 16:9 shell — vertical abandoned until true 9:16 pipeline exists */
+/* Orientation LOCKED: landscape 16:9 — see docs/ORIENTATION.md */
 :root {
   --earth: #5c4033;
   --rain: #3d5a5b;
@@ -369,14 +369,17 @@ html, body {
 .avatar-float {
   position: absolute; left: 4%;
   bottom: calc(128px + var(--safe-b));
-  width: 56px; height: 72px; border-radius: 10px;
+  width: 56px; height: 56px; border-radius: 50%;
   border: 1px solid rgba(196,165,116,.45);
-  background: rgba(26,22,18,.45) center top / cover no-repeat;
+  background: rgba(26,22,18,.45) center center / cover no-repeat;
   box-shadow: 0 6px 20px rgba(0,0,0,.45);
   opacity: 0; transform: translateY(8px);
   transition: opacity .35s, transform .35s; overflow: hidden;
 }
 .avatar-float.show { opacity: 1; transform: translateY(0); }
+/* Square gallery avatars: fill circle. Vertical sprites: face-bias crop (never full-body in dialog). */
+#avatarFloat.av-square { background-size: cover; background-position: center center; }
+#avatarFloat.av-sprite { background-size: 200% auto; background-position: center 8%; }
 .dialogue-box {
   position: relative; cursor: pointer;
   min-height: 118px; max-height: 38%; padding: 22px 28px 18px;
@@ -1461,7 +1464,7 @@ function setCinemaImg(key, animClass){
 function hideTheaterSprites(){
   const sc = $("sceneChar"), av = $("avatarFloat");
   if(sc){ sc.classList.remove("show","cam-zoom"); sc.style.backgroundImage=""; }
-  if(av){ av.classList.remove("show"); av.style.backgroundImage=""; }
+  if(av){ av.classList.remove("show","av-square","av-sprite"); av.style.backgroundImage=""; }
 }
 function onCinemaClick(e){
   if(e) e.stopPropagation();
@@ -1672,6 +1675,21 @@ function bgFitMode(key){
   return "cover"; // landscape stage fill
 }
 
+/** Dialog circle: prefer unlocked square gu_avatar_* ; else sprite with face-bias CSS. */
+function dialogueAvatarUrl(node){
+  const sp = node.sprite || node.avatar;
+  if(!sp) return null;
+  const st = ensureUnlocks(loadStore());
+  if(String(sp).startsWith("gu_") || node.name==="顾山" || node.speaker==="gu"){
+    const order = ["gu_avatar_ur","gu_avatar_sr","gu_avatar_r"];
+    for(const id of order){
+      if(st.unlocks.avatars.includes(id) && IMG[id]) return { url: imgUrl(id), kind: "square" };
+    }
+  }
+  // Xie or locked Gu: vertical sprite + av-sprite face crop
+  return { url: imgUrl(sp), kind: "sprite" };
+}
+
 function setScene(node){
   const bg=$("sceneBg"), fx=$("sceneFx"), mask=$("sceneMask");
   const nextUrl=imgUrl(node.bg);
@@ -1698,9 +1716,15 @@ function setScene(node){
     else if(sprite==="gu_ssr") sc.classList.add("pos-center");
     else sc.classList.add("pos-center");
   }
-  /* CG: full-bleed bg only — large scene-char cleared above; small avatar kept for speaker cue */
-  if(sprite){ av.style.backgroundImage=`url("${imgUrl(sprite)}")`; av.classList.add("show"); }
-  else { av.classList.remove("show"); av.style.backgroundImage=""; }
+  /* CG: full-bleed bg only — large scene-char cleared above; small avatar: square avatars/ preferred */
+  av.classList.remove("av-square","av-sprite");
+  const avInfo = dialogueAvatarUrl(node);
+  if(avInfo && avInfo.url){
+    av.style.backgroundImage=`url("${avInfo.url}")`;
+    av.classList.add("show", avInfo.kind==="square" ? "av-square" : "av-sprite");
+  } else {
+    av.classList.remove("show"); av.style.backgroundImage="";
+  }
   // 特写推进镜头（CG 时不推立绘）
   cameraZoom(!isCg && node.shot==="特写");
   const np=$("nameplate"), sn=$("speakerName"), dt=$("dialogueText");

@@ -10,6 +10,12 @@
 
 桌面：居中舞台（最大约 1280px 宽），外侧可有黑边 letterbox；舞台内不裁切 16:9 底板。
 
+## 方向锁
+
+产品唯一方向：**横版 16:9**（舞台 / BG / CG / 图鉴卡）。旧「真竖 9:16」制作约定**作废**。
+
+细则与资产表、禁令、出图口令见 [`docs/ORIENTATION.md`](docs/ORIENTATION.md)。自检：`node scripts/check-orientation.mjs`。
+
 ## UI 署名
 
 见 [`images/ui/ATTRIBUTION.md`](images/ui/ATTRIBUTION.md)：
