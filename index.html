@@ -299,6 +299,8 @@ html, body {
   background-position: center center; background-repeat: no-repeat;
   transition: opacity var(--fade) ease, transform 1.1s ease, filter .7s ease; opacity: 1;
 }
+.scene-bg.fit-contain { background-size: contain; background-color: #0a0806; }
+.scene-bg.fit-cover { background-size: cover; }
 .scene-bg.dim { filter: brightness(.45) saturate(.7); transform: scale(1.06); }
 .scene-bg.zoom { transform: scale(1.1); }
 .scene-char {
@@ -714,12 +716,12 @@ html, body {
 .cinema-layer.show { opacity: 1; pointer-events: auto; }
 .cinema-layer.video-lock { pointer-events: none; }
 .cinema-frame {
-  position: absolute; inset: 0; overflow: hidden;
+  position: absolute; inset: 0; overflow: hidden; background: #000;
 }
 .cinema-frame img,
 .cinema-frame video {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; opacity: 0;
+  object-fit: contain; opacity: 0;
   transition: opacity 1.5s ease-in-out;
   transform-origin: center center;
   will-change: transform, opacity;
@@ -1589,6 +1591,8 @@ function setScene(node){
   const bg=$("sceneBg"), fx=$("sceneFx"), mask=$("sceneMask");
   const nextUrl=imgUrl(node.bg);
   const isCg=node.bg && String(node.bg).startsWith("cg_");
+  bg.classList.toggle("fit-contain", !!isCg);
+  bg.classList.toggle("fit-cover", !isCg);
   /* fade bg change ~200–400ms */
   bg.style.opacity="0";
   setTimeout(()=>{ bg.style.backgroundImage=`url("${nextUrl}")`; bg.style.opacity="1"; }, 220);
