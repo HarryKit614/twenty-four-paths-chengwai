@@ -295,7 +295,7 @@ html, body {
 #theater { background: #000; }
 .scene-stage { position: absolute; inset: 0; overflow: hidden; background: #0a0806; }
 .scene-bg {
-  position: absolute; inset: 0; background-size: cover;
+  position: absolute; inset: 0; background-size: contain; background-color: #0a0806;
   background-position: center center; background-repeat: no-repeat;
   transition: opacity var(--fade) ease, transform 1.1s ease, filter .7s ease; opacity: 1;
 }
@@ -1665,12 +1665,20 @@ function openLore(key){
 }
 $("tooltipMask").addEventListener("click", ()=>$("tooltipMask").classList.remove("show"));
 
+const COVER_BG = new Set(["bg_field","bg_rain","bg_wall","bg_temple_dusk","bg_yamen_alley","bg_mud_path","bg_hut_day","bg_shrine_rain"]);
+function bgFitMode(key){
+  if(!key) return "contain";
+  if(COVER_BG.has(key)) return "cover";
+  return "contain"; // all cg_* and letterboxed / portrait-origin plates
+}
+
 function setScene(node){
   const bg=$("sceneBg"), fx=$("sceneFx"), mask=$("sceneMask");
   const nextUrl=imgUrl(node.bg);
   const isCg=node.bg && String(node.bg).startsWith("cg_");
-  bg.classList.toggle("fit-contain", !!isCg);
-  bg.classList.toggle("fit-cover", !isCg);
+  const fit=bgFitMode(node.bg);
+  bg.classList.toggle("fit-contain", fit==="contain");
+  bg.classList.toggle("fit-cover", fit==="cover");
   /* fade bg change ~200–400ms */
   bg.style.opacity="0";
   setTimeout(()=>{ bg.style.backgroundImage=`url("${nextUrl}")`; bg.style.opacity="1"; }, 220);
