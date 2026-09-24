@@ -547,6 +547,12 @@ html, body {
 }
 .gal-badge.SR { background: rgba(61,90,91,.7); }
 .gal-badge.SSR { box-shadow: 0 0 12px rgba(196,165,116,.35); }
+.gal-badge.UR {
+  background: rgba(76,61,139,.72);
+  border-color: rgba(167,139,250,.55);
+  color: #e9e0ff;
+  box-shadow: 0 0 14px rgba(129,140,248,.45), 0 0 4px rgba(196,181,253,.35);
+}
 .gal-card.locked { cursor: default; }
 .gal-card .lock-veil {
   position: absolute; inset: 0; z-index: 4;
@@ -628,6 +634,20 @@ html, body {
 }
 .gal-d-frame { position: absolute; inset: 10px; pointer-events: none; border-radius: 4px; z-index: 2; border: 1px solid rgba(196,165,116,.45); }
 .gal-d-frame.SSR { box-shadow: inset 0 0 0 2px rgba(232,213,168,.2), 0 0 28px rgba(196,165,116,.2); }
+.gal-d-frame.UR {
+  border-color: rgba(167,139,250,.5);
+  box-shadow: inset 0 0 0 2px rgba(196,181,253,.18), 0 0 32px rgba(99,102,241,.28), 0 0 12px rgba(139,92,246,.2);
+}
+.gal-d-fx.star .spark {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: #e9e0ff; box-shadow: 0 0 8px rgba(196,181,253,.9), 0 0 2px #a78bfa;
+  animation: starTwinkle 2.8s ease-in-out infinite; opacity: 0;
+}
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0; transform: scale(.5); }
+  40% { opacity: .85; transform: scale(1.15); }
+  70% { opacity: .35; transform: scale(.9); }
+}
 .gal-d-top {
   position: absolute; top: 0; left: 0; right: 0; z-index: 5;
   padding: calc(14px + var(--safe-t)) 14px 0;
@@ -962,6 +982,7 @@ body.cinema-lock .theater-back { opacity: .25; }
       <button type="button" class="gal-chip" data-rarity="R">R</button>
       <button type="button" class="gal-chip" data-rarity="SR">SR</button>
       <button type="button" class="gal-chip" data-rarity="SSR">SSR</button>
+      <button type="button" class="gal-chip" data-rarity="UR">UR</button>
     </div>
     <div class="gal-grid" id="galGrid"></div>
   </section>
@@ -1016,9 +1037,9 @@ body.cinema-lock .theater-back { opacity: .25; }
 </div>
 
 <script>
-const IMG = {"bg_hut_dawn": "images/bg_hut_dawn.png", "bg_hut_day": "images/bg_hut_day.png", "bg_hut_embers": "images/bg_hut_embers.png", "bg_hut_fire": "images/bg_hut_fire.png", "bg_hut_rain_window": "images/bg_hut_rain_window.png", "bg_path_dawn": "images/bg_path_dawn.png", "bg_path_night": "images/bg_path_night.png", "bg_shrine_door": "images/bg_shrine_door.png", "bg_shrine_leak": "images/bg_shrine_leak.png", "bg_shrine_rain": "images/bg_shrine_rain.png", "card_r_longshangyan": "images/card_r_longshangyan.png", "card_sr_yusuogui": "images/card_sr_yusuogui.png", "card_ssr_jiashangshuang": "images/card_ssr_jiashangshuang.png", "cg_carry_in": "images/cg_carry_in.png", "cg_dawn_talk": "images/cg_dawn_talk.png", "cg_enter": "images/cg_enter.png", "cg_fire_share": "images/cg_fire_share.png", "cg_pass": "images/cg_pass.png", "cg_water": "images/cg_water.png", "cg_water_care": "images/cg_water_care.png", "cg_window": "images/cg_window.png", "cg_wrist_close": "images/cg_wrist_close.png", "gu_bowl": "images/gu_bowl.png", "gu_idle": "images/gu_idle.png", "gu_mend": "images/gu_mend.png", "gu_soft": "images/gu_soft.png", "gu_wet": "images/gu_wet.png", "gu_worry": "images/gu_worry.png", "xie_awake": "images/xie_awake.png", "xie_sit": "images/xie_sit.png", "xie_weak": "images/xie_weak.png", "gu_r": "images/portraits/gu_r.png", "gu_sr": "images/portraits/gu_sr.png", "gu_ssr": "images/portraits/gu_ssr.png", "gu_avatar_r": "images/avatars/gu_avatar_r.png", "gu_avatar_sr": "images/avatars/gu_avatar_sr.png", "bg_field": "images/bg/bg_field.jpg", "bg_rain": "images/bg/bg_rain.jpg", "bg_wall": "images/bg/bg_wall.jpg", "bg_temple_dusk": "images/bg_temple_dusk.png", "bg_yamen_alley": "images/bg_yamen_alley.png", "bg_mud_path": "images/bg_mud_path.png", "cg_ferry": "images/cg_ferry.png", "cg_ferry_1": "images/cg/cg_ferry_1.jpg", "cg_ferry_2": "images/cg/cg_ferry_2.jpg", "cg_ferry_3": "images/cg/cg_ferry_3.jpg", "cg_ferry_video": "images/cg/cg_ferry.mp4"};
+const IMG = {"bg_hut_dawn": "images/bg_hut_dawn.png", "bg_hut_day": "images/bg_hut_day.png", "bg_hut_embers": "images/bg_hut_embers.png", "bg_hut_fire": "images/bg_hut_fire.png", "bg_hut_rain_window": "images/bg_hut_rain_window.png", "bg_path_dawn": "images/bg_path_dawn.png", "bg_path_night": "images/bg_path_night.png", "bg_shrine_door": "images/bg_shrine_door.png", "bg_shrine_leak": "images/bg_shrine_leak.png", "bg_shrine_rain": "images/bg_shrine_rain.png", "card_r_longshangyan": "images/card_r_longshangyan.png", "card_sr_yusuogui": "images/card_sr_yusuogui.png", "card_ssr_jiashangshuang": "images/card_ssr_jiashangshuang.png", "cg_carry_in": "images/cg_carry_in.png", "cg_dawn_talk": "images/cg_dawn_talk.png", "cg_enter": "images/cg_enter.png", "cg_fire_share": "images/cg_fire_share.png", "cg_pass": "images/cg_pass.png", "cg_water": "images/cg_water.png", "cg_water_care": "images/cg_water_care.png", "cg_window": "images/cg_window.png", "cg_wrist_close": "images/cg_wrist_close.png", "gu_bowl": "images/gu_bowl.png", "gu_idle": "images/gu_idle.png", "gu_mend": "images/gu_mend.png", "gu_soft": "images/gu_soft.png", "gu_wet": "images/gu_wet.png", "gu_worry": "images/gu_worry.png", "xie_awake": "images/xie_awake.png", "xie_sit": "images/xie_sit.png", "xie_weak": "images/xie_weak.png", "gu_r": "images/portraits/gu_r.png", "gu_sr": "images/portraits/gu_sr.png", "gu_ssr": "images/portraits/gu_ssr.png", "gu_avatar_r": "images/avatars/gu_avatar_r.png", "gu_avatar_sr": "images/avatars/gu_avatar_sr.png", "bg_field": "images/bg/bg_field.jpg", "bg_rain": "images/bg/bg_rain.jpg", "bg_wall": "images/bg/bg_wall.jpg", "bg_temple_dusk": "images/bg_temple_dusk.png", "bg_yamen_alley": "images/bg_yamen_alley.png", "bg_mud_path": "images/bg_mud_path.png", "cg_ferry": "images/cg_ferry.png", "cg_ferry_1": "images/cg/cg_ferry_1.jpg", "cg_ferry_2": "images/cg/cg_ferry_2.jpg", "cg_ferry_3": "images/cg/cg_ferry_3.jpg", "cg_ferry_video": "images/cg/cg_ferry.mp4", "cg_ferry_ur_galaxy": "images/cg/cg_ferry_ur_galaxy.jpg"};
 const LORE = {"天缝": "天裂开来的那道口子。旧年之后，雨里常带细碎的光，像谁把夜空缝坏了。人说靠近它的地方，梦与病会缠在一起。", "病壳": "身子还在，魂却像被抽薄。醒着也像在壳里漂。医家治不好，道士也不肯多说——只说先别让壳空掉。", "渡灵": "不是巫术里的夺舍。是把将散的气，慢慢渡回壳里。像焐手，像把水渡过干裂的唇。顾山说：这算不算医，他也不知道。", "廿四道": "城外廿四条旧路。有人说那是逃命的道，有人说是还愿的道。你醒来时，雨正落在其中一条上。"};
-const GALLERY = [{"id": "gu_r_longshangyan", "char": "顾山", "name": "垄上烟", "rarity": "R", "theme": "农耕", "image": "card_r_longshangyan", "sprite": "gu_r", "plate": null, "pos": "right", "unlocked": false, "story": "那年猎获薄，村里粮也紧。顾山在破祠后空垄里下了荞麦种。有人笑猎户耕田，他只应一声，把锄柄握热。黄昏炊烟起来时，他站在垄上，看烟散进山影里——人要活，不只靠血气，也靠一寸能长苗的土。", "obtain": "完成第一章「雨夜破祠」", "track": "align", "align": "立住信任·之后可读", "note": "主线未写农耕，心迹为阶段对齐的日常切片"}, {"id": "gu_sr_yusuogui", "char": "顾山", "name": "雨蓑归", "rarity": "SR", "theme": "雨夜蓑衣", "image": "card_sr_yusuogui", "sprite": "gu_sr", "plate": null, "pos": "right", "unlocked": false, "story": "山里夜雨，路只剩脚感。他披着旧蓑，斗笠压低，怀里是邻村托他带回的药包。雨打蓑衣的声音很密，像有人在身外说话。他没有加快，也没有停。到灯火处时，蓑上的水一串串落在门槛外，他才抬手摘笠——雨还在下，人已经回来了。", "obtain": "亲密度（心+信）达到 20", "track": "align", "align": "陌生救命", "note": "对齐第一章雨夜救助气质"}, {"id": "gu_ssr_jiashangshuang", "char": "顾山", "name": "甲上霜", "rarity": "SSR", "theme": "军场旧影", "image": "card_ssr_jiashangshuang", "sprite": "gu_ssr", "plate": null, "pos": "center", "unlocked": false, "story": "更早些年，关城外有霜。铁衣一夜结白，像谁在甲上写了无声的字。那一仗没有写进谁的功册，他却记得天亮时枪尖的冷。后来他卸甲入山，甲留在箱底。偶有霜降，他仍会在门边站一站——不是想念战场，只是确认：自己还选得了「不走那条路」。", "obtain": "后续·猎刀残片", "track": "branched", "align": "分轨·入山前", "note": "branched：甲上霜为入山前往事，非第一章同室戒备主线"}];
+const GALLERY = [{"id": "gu_r_longshangyan", "char": "顾山", "name": "垄上烟", "rarity": "R", "theme": "农耕", "image": "card_r_longshangyan", "sprite": "gu_r", "plate": null, "pos": "right", "unlocked": false, "story": "那年猎获薄，村里粮也紧。顾山在破祠后空垄里下了荞麦种。有人笑猎户耕田，他只应一声，把锄柄握热。黄昏炊烟起来时，他站在垄上，看烟散进山影里——人要活，不只靠血气，也靠一寸能长苗的土。", "obtain": "完成第一章「雨夜破祠」", "track": "align", "align": "立住信任·之后可读", "note": "主线未写农耕，心迹为阶段对齐的日常切片"}, {"id": "gu_sr_yusuogui", "char": "顾山", "name": "雨蓑归", "rarity": "SR", "theme": "雨夜蓑衣", "image": "card_sr_yusuogui", "sprite": "gu_sr", "plate": null, "pos": "right", "unlocked": false, "story": "山里夜雨，路只剩脚感。他披着旧蓑，斗笠压低，怀里是邻村托他带回的药包。雨打蓑衣的声音很密，像有人在身外说话。他没有加快，也没有停。到灯火处时，蓑上的水一串串落在门槛外，他才抬手摘笠——雨还在下，人已经回来了。", "obtain": "亲密度（心+信）达到 20", "track": "align", "align": "陌生救命", "note": "对齐第一章雨夜救助气质"}, {"id": "gu_ssr_jiashangshuang", "char": "顾山", "name": "甲上霜", "rarity": "SSR", "theme": "军场旧影", "image": "card_ssr_jiashangshuang", "sprite": "gu_ssr", "plate": null, "pos": "center", "unlocked": false, "story": "更早些年，关城外有霜。铁衣一夜结白，像谁在甲上写了无声的字。那一仗没有写进谁的功册，他却记得天亮时枪尖的冷。后来他卸甲入山，甲留在箱底。偶有霜降，他仍会在门边站一站——不是想念战场，只是确认：自己还选得了「不走那条路」。", "obtain": "后续·猎刀残片", "track": "branched", "align": "分轨·入山前", "note": "branched：甲上霜为入山前往事，非第一章同室戒备主线"}, {"id": "gu_ur_xinghedu", "char": "顾山", "name": "星河渡", "rarity": "UR", "theme": "太始星河", "image": "cg_ferry_ur_galaxy", "sprite": null, "plate": null, "pos": "center", "unlocked": false, "story": "（心迹）星尘里，他捏着你的下巴。凡人吻上沉睡的神明——不是拯救的仪式，是把「还热」这件事，说进虚空里。", "obtain": "收齐第一章三结局，且亲密度（心+信）≥20", "track": "branched", "align": "分轨·太始星河", "note": "UR收藏CG；不替换主线渡灵动画"}];
 const AVATARS = [
   {id:"gu_avatar_r", name:"顾山·猎户", image:"gu_avatar_r", cardId:"gu_r_longshangyan"},
   {id:"gu_avatar_sr", name:"顾山·雨夜", image:"gu_avatar_sr", cardId:"gu_sr_yusuogui"}
@@ -1059,6 +1080,8 @@ function saveStore(o){ localStorage.setItem(STORE_KEY, JSON.stringify(o)); }
 /* ===== Gallery unlock + avatars ===== */
 const CARD_R = "gu_r_longshangyan";
 const CARD_SR = "gu_sr_yusuogui";
+const CARD_UR = "gu_ur_xinghedu";
+const UR_ENDING_TITLES = ["雨后脚印", "看火与祠", "一声「嗯」"];
 const AV_R = "gu_avatar_r";
 const AV_SR = "gu_avatar_sr";
 let unlockToastTimer = null;
@@ -1068,7 +1091,8 @@ function ensureUnlocks(st){
   if(!st.unlocks || typeof st.unlocks !== "object") st.unlocks = {};
   if(!Array.isArray(st.unlocks.cards)) st.unlocks.cards = [];
   if(!Array.isArray(st.unlocks.avatars)) st.unlocks.avatars = [];
-  // migrate: chapter1Done → R; bestAff>=20 → SR
+  // migrate: chapter1Done → R; bestAff>=20 → SR; endingsSeen shape
+  if(!st.endingsSeen || typeof st.endingsSeen !== "object") st.endingsSeen = {};
   if(st.chapter1Done){
     if(!st.unlocks.cards.includes(CARD_R)) st.unlocks.cards.push(CARD_R);
     if(!st.unlocks.avatars.includes(AV_R)) st.unlocks.avatars.push(AV_R);
@@ -1078,6 +1102,27 @@ function ensureUnlocks(st){
     if(!st.unlocks.avatars.includes(AV_SR)) st.unlocks.avatars.push(AV_SR);
   }
   return st;
+}
+function urConditionsMet(st){
+  if(!st || typeof st !== "object") return false;
+  const seen = st.endingsSeen || {};
+  if(!UR_ENDING_TITLES.every(t => !!seen[t])) return false;
+  return (st.bestAff||0) >= 20;
+}
+/** Unlock gallery card only. Toast when newly unlocked and toastTitle given. */
+function unlockCard(cardId, toastTitle){
+  const st = ensureUnlocks(loadStore());
+  if(!cardId || st.unlocks.cards.includes(cardId)) return false;
+  st.unlocks.cards.push(cardId);
+  saveStore(st);
+  if(toastTitle) showUnlockToast(toastTitle);
+  return true;
+}
+function checkUrUnlock(silent){
+  const st = ensureUnlocks(loadStore());
+  if(!urConditionsMet(st)) return false;
+  if(st.unlocks.cards.includes(CARD_UR)) return false;
+  return unlockCard(CARD_UR, silent ? null : "解锁UR · 星河渡");
 }
 function isCardUnlocked(card){
   if(!card) return false;
@@ -1182,9 +1227,16 @@ window.__tfpUnlockTest = function(mode){
     saveStore(st);
     checkSrUnlock();
   }
+  if(mode==="ur" || mode==="all"){
+    st.endingsSeen = {"雨后脚印": true, "看火与祠": true, "一声「嗯」": true};
+    st.bestAff = Math.max(st.bestAff||0, 20);
+    saveStore(st);
+    checkUrUnlock();
+  }
   if(mode==="reset"){
     st.unlocks = {cards:[], avatars:[]};
     st.homeAvatar = null;
+    st.endingsSeen = {};
     saveStore(st);
   }
   renderGallery();
@@ -1288,6 +1340,7 @@ function updateAffinity(){
   const lit=Math.min(5, Math.floor(best/2));
   document.querySelectorAll("#homeAff .aff-pip").forEach((p,i)=>p.classList.toggle("on", i<lit));
   checkSrUnlock();
+  checkUrUnlock();
 }
 function applyDelta(delta){
   if(!delta) return;
@@ -1680,8 +1733,11 @@ function showEnding(){
   $("endingCard").classList.add("show");
   const st=ensureUnlocks(loadStore());
   st.chapter1Done=true; st.endingTitle=end.title;
+  if(!st.endingsSeen || typeof st.endingsSeen !== "object") st.endingsSeen = {};
+  if(end.title) st.endingsSeen[end.title] = true;
   st.bestAff=Math.max(st.bestAff||0,(state.vars.心||0)+(state.vars.信||0));
   saveStore(st);
+  checkUrUnlock();
   unlockChapterClear();
   updateAffinity();
 }
@@ -1791,6 +1847,17 @@ function spawnFrostParticles(fx){
     fx.appendChild(s);
   }
 }
+function spawnStarParticles(fx){
+  fx.innerHTML="";
+  for(let i=0;i<22;i++){
+    const s=document.createElement("span"); s.className="spark";
+    s.style.left=(Math.random()*100)+"%";
+    s.style.top=(Math.random()*100)+"%";
+    s.style.animationDelay=(Math.random()*2.4)+"s";
+    s.style.animationDuration=(2.2+Math.random()*1.8)+"s";
+    fx.appendChild(s);
+  }
+}
 function openGalDetail(id){
   const card=GALLERY.find(c=>c.id===id); if(!card) return;
   galCurrent=card; galZoomed=false;
@@ -1820,6 +1887,7 @@ function openGalDetail(id){
   const fx=$("galDFx"); fx.className="gal-d-fx"; fx.innerHTML="";
   if(card.id.includes("yusuogui")) fx.classList.add("rain");
   if(card.id.includes("jiashangshuang")){ fx.classList.add("frost"); spawnFrostParticles(fx); }
+  if(card.rarity==="UR" || card.id.includes("xinghedu")){ fx.classList.add("star"); spawnStarParticles(fx); }
   $("galDetail").classList.add("show");
 }
 function closeGalDetail(){ $("galDetail").classList.remove("show"); galCurrent=null; }
@@ -1985,7 +2053,7 @@ $("dialogueBox").addEventListener("click", e=>{
   if(e.target.classList.contains("lore")) return; advance();
 });
 document.addEventListener("dragstart", e=>e.preventDefault());
-(function(){ const st=ensureUnlocks(loadStore()); saveStore(st); })(); initHome(); updateStats();
+(function(){ const st=ensureUnlocks(loadStore()); saveStore(st); checkUrUnlock(true); })(); initHome(); updateStats();
 window.__tfpGo = goNode;
 window.__tfpStart = startChapter;
 window.__tfpFerry = ()=>{ showScreen("theater"); state.vars={壳:1,魂:0,信:1,心:1}; updateStats(); goNode("n13"); };
