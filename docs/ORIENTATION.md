@@ -28,3 +28,4 @@
 
 ## 导入记录
 - 2026-09-24：用户横版 batch1（`review/user_landscape_batch1/`）已对位写入 Ch1 空景/CG/卡面；`cg_night_guard` 用于 n29–n30；`IMG.gu_r` 暂指向 `card_r_longshangyan.png`（portraits 立绘未删）。尚缺 6 张 AI 高缺补图（见 ASSIGNMENT）。
+- ch1_plan15 BG batch approved 2026-09-24：`bg_shrine_rain`、`bg_shrine_leak`、`bg_hut_day`、`bg_mud_path`、`bg_temple_dusk`。
